@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: aio-config-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: smb.csi.k8s.io
+    volumeHandle: aio-config-storagebox
+    readOnly: false
+    volumeAttributes:
+      source: "//u527831.your-storagebox.de/backup/nextcloud/aio-config"
+    nodeStageSecretRef:
+      name: storagebox-credentials
+      namespace: nextcloud
+  claimRef:
+    namespace: nextcloud
+    name: aio-config-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-data-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: smb.csi.k8s.io
+    volumeHandle: nextcloud-data-storagebox
+    readOnly: false
+    volumeAttributes:
+      source: "//u527831.your-storagebox.de/backup/nextcloud/nextcloud-data"
+    nodeStageSecretRef:
+      name: storagebox-credentials
+      namespace: nextcloud
+  claimRef:
+    namespace: nextcloud
+    name: nextcloud-data-pvc
