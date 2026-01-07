@@ -1,0 +1,6 @@
+# Ignore secrets folder but keep example files
+ansible/secrets/*
+!ansible/secrets/*.example
+!ansible/secrets/README.md
+run.sh
+ansible/inventory.ini

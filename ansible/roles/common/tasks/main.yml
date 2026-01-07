@@ -1,0 +1,18 @@
+---
+# Update apt and install packages
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install base packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - software-properties-common
+      - cifs-utils
+    state: present
+    update_cache: yes

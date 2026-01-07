@@ -1,0 +1,19 @@
+---
+# Global defaults and sensitive values should be placed in ansible/secrets/.env
+
+# Nextcloud AIO installation directory on the host
+nextcloud_aio_dir: /opt/nextcloud-aio
+nextcloud_env_file: "{{ nextcloud_aio_dir }}/.env"
+
+# SMB persistence mount (persistent storage root)
+smb_mount: /mnt/ncpersistence
+smb_server: ""
+smb_share: ""
+smb_username: ""
+smb_password: ""
+smb_creds_file: /etc/smb-credentials-nextcloud
+
+# SSH connection args to disable strict host key checking for this project
+# Note: disabling host key checking is insecure and should only be used for
+# managed test environments or when you accept the risk.
+ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'

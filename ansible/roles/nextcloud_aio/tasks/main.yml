@@ -1,0 +1,21 @@
+---
+- name: Pull and start Nextcloud AIO
+  community.docker.docker_compose_v2:
+    project_src: "{{ nextcloud_aio_dir }}"
+    state: present
+    pull: always
+  register: result
+  until: result is not failed
+  retries: 3
+  delay: 10
+
+- name: Wait for Nextcloud web to respond
+  uri:
+    url: "https://localhost:8080/login"
+    status_code: 200
+    timeout: 5
+    validate_certs: false
+  register: nc_up
+  retries: 20
+  delay: 6
+  until: nc_up.status == 200

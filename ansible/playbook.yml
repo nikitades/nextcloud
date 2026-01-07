@@ -1,0 +1,9 @@
+---
+- name: Provision Nextcloud AIO host
+  hosts: nextcloud
+  pre_tasks:
+  roles:
+    - common
+    - smb
+    - docker
+    - nextcloud_aio

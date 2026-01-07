@@ -1,0 +1,53 @@
+---
+- name: Set SMB facts from environment (prefer extra-vars, fallback to env)
+  ansible.builtin.set_fact:
+    smb_server: "{{ smb_server | default(lookup('env','SMB_SERVER')) }}"
+    smb_share: "{{ smb_share | default(lookup('env','SMB_SHARE')) }}"
+    smb_username: "{{ smb_username | default(lookup('env','SMB_USERNAME')) }}"
+    smb_password: "{{ smb_password | default(lookup('env','SMB_PASSWORD')) }}"
+
+- name: Validate SMB configuration
+  ansible.builtin.assert:
+    that:
+      - "smb_server is defined and smb_server | length > 0"
+      - "smb_share is defined and smb_share | length > 0"
+      - "smb_username is defined and smb_username | length > 0"
+      - "smb_password is defined and smb_password | length > 0"
+    fail_msg: "Missing SMB configuration: set smb_server, smb_share, smb_username and smb_password in group_vars, via --extra-vars or via SMB_* env vars"
+
+- name: Create smb mount point
+  file:
+    path: "{{ smb_mount }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0770"
+
+- name: Write SMB credentials file
+  copy:
+    dest: "{{ smb_creds_file }}"
+    content: |
+      username={{ smb_username }}
+      password={{ smb_password }}
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure CIFS mount for SMB persistence
+  mount:
+    path: "{{ smb_mount }}"
+    src: "//{{ smb_server }}/{{ smb_share }}"
+    fstype: cifs
+    opts: "credentials={{ smb_creds_file }},uid=33,mfsymlinks,file_mode=0770,dir_mode=0770"
+    state: mounted
+  when: smb_server != ""
+
+- name: Create nextcloud persistence subdirs on mount
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0770"
+  loop:
+    - "{{ smb_mount }}/ncdata"
