@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+    --extra-vars "smb_server=u123456.your-storagebox.de" \
+    --extra-vars "smb_share=backup" \
+    --extra-vars "smb_password='somepwd'" \
+    --extra-vars="smb_username=u123456" \
+    -vvv
